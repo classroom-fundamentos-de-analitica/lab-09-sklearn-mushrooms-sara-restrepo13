@@ -24,7 +24,12 @@ def load_datasets():
     train_dataset = pd.read_csv("train_dataset.csv")
     test_dataset = pd.read_csv("test_dataset.csv")
 
-    x_train = train_dataset.drop("type", axis=1)
+    train_dataset['type'] = train_dataset['type'].replace({'e':1,'p':0})
+    test_dataset['type'] = test_dataset['type'].replace({'e':1,'p':0})
+    train_dataset = pd.get_dummies(train_dataset, dtype=int)
+    test_dataset = pd.get_dummies(test_dataset, dtype=int)
+
+    x_train = train_dataset.drop(['type','cap_shape_c'], axis=1)
     y_train = train_dataset["type"]
 
     x_test = test_dataset.drop("type", axis=1)
@@ -47,11 +52,6 @@ def compute_metrics():
     estimator = load_estimator()
     assert estimator is not None, "Model not found"
 
-
-if __name__ == "__main__":
-    run_grading()
-    
-
     x_train, x_test, y_true_train, y_true_test = load_datasets()
 
     y_pred_train = estimator.predict(x_train)
@@ -70,3 +70,10 @@ def run_grading():
 
     assert accuracy_train > 0.99
     assert accuracy_test > 0.99
+    
+
+if __name__ == "__main__":
+    run_grading()
+    
+
+
